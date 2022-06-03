@@ -59,9 +59,15 @@ register(username:any,acno:any,password: any){
 }
 //deposit
 deposit(acno:any,password:any,amt:any){
+  console.log(amt);
+  
   var amount = parseInt(amt)
   let db=this.db
+  
+  
   if(acno in db){
+    
+    
     if(password == db[acno]["password"]){
       db[acno]["balance"]+=amount
       return db[acno]["balance"]
@@ -79,6 +85,8 @@ deposit(acno:any,password:any,amt:any){
 withdraw(acno: any,password:any,amt:any){
   var amount = parseInt(amt)
   let db = this.db
+  
+  
   if(acno in db){
     if(password == db[acno]["password"]){
       if(db[acno]["balance"]>amount){

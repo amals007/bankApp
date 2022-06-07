@@ -7,12 +7,24 @@ export class DataService {
 
 currentUser:any
   db: any = {
-    1000: { "acno": 1000, "username": "Neer", "password": 1000, "balance": 5000 },
-    1001: { "acno": 1001, "username": "Laisha", "password": 1001, "balance": 5000 },
-    1002: { "acno": 1002, "username": "Vipin", "password": 1002, "balance": 3000 }
+    1000: { "acno": 1000, "username": "Neer", "password": 1000, "balance": 5000, transaction: [] },
+    1001: { "acno": 1001, "username": "Laisha", "password": 1001, "balance": 5000,transaction: [] },
+    1002: { "acno": 1002, "username": "Vipin", "password": 1002, "balance": 3000, transaction: [] }
   }
 
-  constructor() { }
+  constructor() { 
+    this.getDetails()
+  }
+
+getDetails(){
+  if(localStorage.getItem("database")){
+    this.db=JSON.parse(localStorage.getItem("database")|| '')
+  }
+  if(localStorage.getItem("currentUser")){
+    this.currentUser =JSON.parse(localStorage.getItem("currentUser")|| '')
+  }
+}
+
   saveDetails(){
     if(this.db){
       localStorage.setItem("database",JSON.stringify(this.db))
@@ -59,10 +71,13 @@ register(username:any,acno:any,password: any){
       acno,
       username,
       password,
-      "balance": 0
+      "balance": 0,
+      transaction: []
     }
     
     this.saveDetails()
+    console.log(db);
+    
 
     return true
     
@@ -71,9 +86,10 @@ register(username:any,acno:any,password: any){
 }
 //deposit
 deposit(acno:any,password:any,amt:any){
-  console.log(amt);
-  
+ 
   var amount = parseInt(amt)
+  
+  
   let db=this.db
   
   
@@ -82,7 +98,13 @@ deposit(acno:any,password:any,amt:any){
     
     if(password == db[acno]["password"]){
       db[acno]["balance"]+=amount
+      db[acno].transaction.push({
+        type:"CREDIT",
+        amount: amount
+      })
       this.saveDetails()
+    
+      
       return db[acno]["balance"]
     }
     else{
@@ -104,6 +126,10 @@ withdraw(acno: any,password:any,amt:any){
     if(password == db[acno]["password"]){
       if(db[acno]["balance"]>amount){
         db[acno]["balance"]-=amount
+        db[acno].transaction.push({
+          type:"DEBIT",
+          amount: amount
+        })
         this.saveDetails()
         return db[acno]["balance"]
       }

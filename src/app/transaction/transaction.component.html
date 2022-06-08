@@ -13,16 +13,13 @@
           </tr>
       </thead>
       <tbody>
-        <tr>
-            <th>Credit</th>
-            <th>1000</th>
+        <tr *ngFor="let i of transaction">
+            <th>{{i.type}}</th>
+            <th>{{i.amount}}</th>
         </tr>
-        <tr>
-            <th>Debit</th>
-            <th>1000</th>
-        </tr>
+      
       </tbody>
   </table>
   <br><br>
 
-  <a routerLink="/dashboard" style="font-size: 20px; margin-left: 1020px; margin-right: auto">Home</a>
+  <a routerLink="/dashboard" style="font-size: 20px; margin-left: 930px; margin-right: auto">Home</a>

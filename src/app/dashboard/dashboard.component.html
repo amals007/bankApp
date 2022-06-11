@@ -6,11 +6,18 @@
     <span class="quote text-light">Giving you freedom...</span>
   </nav>
 <h1 style="color:white">Welcome {{user}}</h1>
-<a routerLink="/transaction">View Transaction History</a>
 <button class="btn btn-warning" (click)="logout()" style="float: right; margin-right: 10px">Logout</button>
 <hr>
+<h5 style="color: white">{{lDate | date: 'short'}}</h5>
+<a routerLink="/transaction">View Transaction History</a>
+<button class="btn btn-danger" (click)="deleteAccount()" style="float: right; margin-right: 10px;">DELETE</button>
+
+<app-delete-confirm (onCancel)="cancel()"  [item]="acno"></app-delete-confirm>
+<!-- ANIMATION SELECTOR -->
+<!-- <app-animation-demo></app-animation-demo> -->  
+<hr>
   
-  <div class="container col-md-12 mt-0">
+  <div [ngClass]="acno? 'c1':'' " class="container col-md-12 mt-0">
       <div class="d-flex justify-content-center h-100">
           <div class="card">
               <div class="card-header">
@@ -56,7 +63,7 @@
   
 
   
-  <div class="container col-md-12 mt-0">
+  <div [ngClass]="acno? 'c1':'' "  class="container col-md-12 mt-0">
       <div class="d-flex justify-content-center h-100">
           <div class="card">
               <div class="card-header">

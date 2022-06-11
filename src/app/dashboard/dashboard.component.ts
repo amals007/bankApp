@@ -10,12 +10,12 @@ import { DataService } from '../services/data.service';
 })
 export class DashboardComponent implements OnInit {
 
-  acno = ""
-  pswd = ""
-  amount = ""
-  acno1 = ""
-  pswd1 = ""
-  amount1 = ""
+  // acno = ""
+  // pswd = ""
+  // amount = ""
+  // acno1 = ""
+  // pswd1 = ""
+  // amount1 = ""
   depositForm = this.fb.group({
     acno: ['', [Validators.required, Validators.pattern('[0-9]*')]],
     pswd: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]],
@@ -27,14 +27,16 @@ export class DashboardComponent implements OnInit {
     pswd1: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]],
     amount1: ['', [Validators.required, Validators.pattern('[0-9]*')]]
   })
-
+  acno = ""
   user: any
-  constructor(private ds: DataService, private fb: FormBuilder, private router:Router) {
+  lDate: any
+  constructor(private ds: DataService, private fb: FormBuilder, private router: Router) {
     this.user = this.ds.currentUser
+    this.lDate = new Date()
   }
 
   ngOnInit(): void {
-    if(!localStorage.getItem("currentAcno")){
+    if (!localStorage.getItem("currentAcno")) {
       alert("please login")
       this.router.navigateByUrl("")
     }
@@ -76,7 +78,13 @@ export class DashboardComponent implements OnInit {
     localStorage.removeItem("currentAcno")
     this.router.navigateByUrl("")
   }
+  deleteAccount() {
+    this.acno = JSON.parse(localStorage.getItem("currentAcno") || "")
 
+  }
+  cancel() {
+    this.acno = ""
+  }
 
 
 }

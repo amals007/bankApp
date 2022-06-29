@@ -1,161 +1,146 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DataService {
-currentAcno:any
-currentUser:any
+  currentAcno: any;
+  currentUser: any;
   db: any = {
-    1000: { "acno": 1000, "username": "Neer", "password": 1000, "balance": 5000, transactions: [] },
-    1001: { "acno": 1001, "username": "Laisha", "password": 1001, "balance": 5000,transactions: [] },
-    1002: { "acno": 1002, "username": "Vipin", "password": 1002, "balance": 3000, transactions: [] }
+    1000: {
+      acno: 1000,
+      username: 'Neer',
+      password: 1000,
+      balance: 5000,
+      transactions: [],
+    },
+    1001: {
+      acno: 1001,
+      username: 'Laisha',
+      password: 1001,
+      balance: 5000,
+      transactions: [],
+    },
+    1002: {
+      acno: 1002,
+      username: 'Vipin',
+      password: 1002,
+      balance: 3000,
+      transactions: [],
+    },
+  };
+
+  constructor(private http: HttpClient) {
+    this.getDetails();
   }
 
-  constructor() { 
-    this.getDetails()
-  }
-
-getDetails(){
-  if(localStorage.getItem("database")){
-    this.db=JSON.parse(localStorage.getItem("database")|| '')
-  }
-  if(localStorage.getItem("currentUser")){
-    this.currentUser =JSON.parse(localStorage.getItem("currentUser")|| '')
-  }
-  if(localStorage.getItem("currentAcno")){
-    this.currentAcno =JSON.parse(localStorage.getItem("currentAcno")|| '')
-  }
-}
-
-  saveDetails(){
-    if(this.db){
-      localStorage.setItem("database",JSON.stringify(this.db))
+  getDetails() {
+    if (localStorage.getItem('database')) {
+      this.db = JSON.parse(localStorage.getItem('database') || '');
     }
-    if(this.currentUser){
-      localStorage.setItem("currentUser",JSON.stringify(this.currentUser))
+    if (localStorage.getItem('currentUser')) {
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '');
     }
-    if(this.currentAcno){
-      localStorage.setItem("currentAcno",JSON.stringify(this.currentAcno))
+    if (localStorage.getItem('currentAcno')) {
+      this.currentAcno = JSON.parse(localStorage.getItem('currentAcno') || '');
     }
   }
 
+  saveDetails() {
+    if (this.db) {
+      localStorage.setItem('database', JSON.stringify(this.db));
+    }
+    if (this.currentUser) {
+      localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    }
+    if (this.currentAcno) {
+      localStorage.setItem('currentAcno', JSON.stringify(this.currentAcno));
+    }
+  }
 
-  login(acno :any,pswd : any) {
+  login(acno: any, pswd: any) {
+    let db = this.db;
 
-    let db = this.db
-
-    if(acno in db){
-      if(pswd == db[acno]["password"]){       // if(pswd == db[acno].password)
-        this.currentUser=db[acno]["username"]
-        this.currentAcno=acno
-        this.saveDetails()
-       return true
-       
+    if (acno in db) {
+      if (pswd == db[acno]['password']) {
+        // if(pswd == db[acno].password)
+        this.currentUser = db[acno]['username'];
+        this.currentAcno = acno;
+        this.saveDetails();
+        return true;
+      } else {
+        alert('Incorrect Password');
+        return false;
       }
-      else{
-        alert("Incorrect Password")
-        return false
-      }
+    } else {
+      alert('user does not exist');
+      return false;
     }
-    else{
-      alert("user does not exist")
-      return false
-    }
-
   }
 
   //register
-register(username:any,acno:any,password: any){
-  let db=this.db
-
-  if(acno in db){
-    return false
-  }
-  else{
-    //insert in db
-    db[acno]={
-      acno,
+  register(username: any, acno: any, password: any) {
+    const data = {
       username,
+      acno,
       password,
-      "balance": 0,
-      transaction: []
-    }
-    
-    this.saveDetails()
-    console.log(db);
-    
+    };
+    // asynchronous
+    return this.http.post('http://localhost:3000/register', data);
+  }
+  //deposit
+  deposit(acno: any, password: any, amt: any) {
+    var amount = parseInt(amt);
 
-    return true
-    
-  }
+    let db = this.db;
 
-}
-//deposit
-deposit(acno:any,password:any,amt:any){
- 
-  var amount = parseInt(amt)
-  
-  
-  let db=this.db
-  
-  
-  if(acno in db){
-    
-    
-    if(password == db[acno]["password"]){
-      db[acno]["balance"]+=amount
-      db[acno].transaction.push({
-        type:"CREDIT",
-        amount: amount
-      })
-      this.saveDetails()
-    
-      
-      return db[acno]["balance"]
-    }
-    else{
-      alert("Incorrect Password")
-      return false
-    }
-  }
-  else{
-    alert("User does not exist ...")
-    return false
-  }
-}
-withdraw(acno: any,password:any,amt:any){
-  var amount = parseInt(amt)
-  let db = this.db
-  
-  
-  if(acno in db){
-    if(password == db[acno]["password"]){
-      if(db[acno]["balance"]>amount){
-        db[acno]["balance"]-=amount
+    if (acno in db) {
+      if (password == db[acno]['password']) {
+        db[acno]['balance'] += amount;
         db[acno].transaction.push({
-          type:"DEBIT",
-          amount: amount
-        })
-        this.saveDetails()
-        return db[acno]["balance"]
+          type: 'CREDIT',
+          amount: amount,
+        });
+        this.saveDetails();
+
+        return db[acno]['balance'];
+      } else {
+        alert('Incorrect Password');
+        return false;
       }
-      else{
-        alert("insufficient balance")
-      }
-    }
-    else{
-      alert("Incorrect Password")
-      return false
+    } else {
+      alert('User does not exist ...');
+      return false;
     }
   }
- else{
-   alert("user does not exist")
-   return false
- }
-}
-getTransaction(acno:any){
-  return this.db[acno].transaction
-}
+  withdraw(acno: any, password: any, amt: any) {
+    var amount = parseInt(amt);
+    let db = this.db;
 
+    if (acno in db) {
+      if (password == db[acno]['password']) {
+        if (db[acno]['balance'] > amount) {
+          db[acno]['balance'] -= amount;
+          db[acno].transaction.push({
+            type: 'DEBIT',
+            amount: amount,
+          });
+          this.saveDetails();
+          return db[acno]['balance'];
+        } else {
+          alert('insufficient balance');
+        }
+      } else {
+        alert('Incorrect Password');
+        return false;
+      }
+    } else {
+      alert('user does not exist');
+      return false;
+    }
+  }
+  getTransaction(acno: any) {
+    return this.db[acno].transaction;
+  }
 }

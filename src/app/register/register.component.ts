@@ -6,43 +6,43 @@ import { DataService } from '../services/data.service';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
 })
-export class RegisterComponent implements OnInit {  
-
-
+export class RegisterComponent implements OnInit {
   //form group
   registerForm = this.fb.group({
-    acno: ['',[Validators.required,Validators.pattern('[0-9]*')]],
-    pswd: ['',[Validators.required,Validators.pattern('[a-zA-Z0-9]*')]],
-    uname: ['',[Validators.required,Validators.pattern('[a-zA-Z ]*')]]
-  })
+    acno: ['', [Validators.required, Validators.pattern('[0-9]*')]],
+    pswd: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]],
+    uname: ['', [Validators.required, Validators.pattern('[a-zA-Z ]*')]],
+  });
 
-  constructor(private ds: DataService, private router: Router, private fb: FormBuilder) { }
+  constructor(
+    private ds: DataService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
   register() {
-    var uname = this.registerForm.value.uname
-    var acno = this.registerForm.value.acno
-    var pswd = this.registerForm.value.pswd
-    console.log(this.registerForm.valid)
-    
-    if(this.registerForm.valid){ 
-    const result = this.ds.register(uname, acno, pswd)
+    var uname = this.registerForm.value.uname;
+    var acno = this.registerForm.value.acno;
+    var pswd = this.registerForm.value.pswd;
 
-    if (result) {
-      alert("successfully registered")
-      this.router.navigateByUrl("")
-    }
-    else {
-      alert("already existing customer ... Please login")
+    if (this.registerForm.valid) {
+      //asynchronous
+      this.ds.register(uname, acno, pswd).subscribe(
+        (result: any) => {
+          if (result) {
+            alert(result.message);
+            this.router.navigateByUrl('');
+          }
+        },
+        (result) => {
+          alert(result.error.message);
+        }
+      );
+    } else {
+      alert('invalid Form');
     }
   }
-  else{
-    alert("invalid Username")
-  }
-}
-
-
 }

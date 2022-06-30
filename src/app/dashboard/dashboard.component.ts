@@ -31,15 +31,15 @@ export class DashboardComponent implements OnInit {
   user: any
   lDate: any
   constructor(private ds: DataService, private fb: FormBuilder, private router: Router) {
-    this.user = this.ds.currentUser
+    this.user = localStorage.getItem('currentUser')
     this.lDate = new Date()
   }
 
   ngOnInit(): void {
-    if (!localStorage.getItem("currentAcno")) {
-      alert("please login")
-      this.router.navigateByUrl("")
-    }
+    // if (!localStorage.getItem("currentAcno")) {
+    //   alert("please login")
+    //   this.router.navigateByUrl("")
+    // }
 
   }
   deposit() {
@@ -48,10 +48,16 @@ export class DashboardComponent implements OnInit {
     var amount = this.depositForm.value.amount
     if (this.depositForm.valid) {
       const result = this.ds.deposit(acno, pswd, amount)
-
-      if (result) {
-        alert(amount + "deposited successfully and new balance is:  " + result)
+      .subscribe((result:any) =>{
+        if(result){
+          alert(result.message)
+        }
+      },
+       result => {
+        alert(result.error.message)
       }
+
+      )
     }
     else {
       alert("invalid form")

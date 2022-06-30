@@ -1,5 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+
+const options = {
+  headers: new HttpHeaders()
+}
 
 @Injectable({
   providedIn: 'root',
@@ -31,21 +35,7 @@ export class DataService {
     },
   };
 
-  constructor(private http: HttpClient) {
-    this.getDetails();
-  }
-
-  getDetails() {
-    if (localStorage.getItem('database')) {
-      this.db = JSON.parse(localStorage.getItem('database') || '');
-    }
-    if (localStorage.getItem('currentUser')) {
-      this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '');
-    }
-    if (localStorage.getItem('currentAcno')) {
-      this.currentAcno = JSON.parse(localStorage.getItem('currentAcno') || '');
-    }
-  }
+  constructor(private http: HttpClient) {}
 
   saveDetails() {
     if (this.db) {
@@ -60,23 +50,12 @@ export class DataService {
   }
 
   login(acno: any, pswd: any) {
-    let db = this.db;
-
-    if (acno in db) {
-      if (pswd == db[acno]['password']) {
-        // if(pswd == db[acno].password)
-        this.currentUser = db[acno]['username'];
-        this.currentAcno = acno;
-        this.saveDetails();
-        return true;
-      } else {
-        alert('Incorrect Password');
-        return false;
-      }
-    } else {
-      alert('user does not exist');
-      return false;
-    }
+    const data = {
+      acno,
+      pswd,
+    };
+    // asynchronous
+    return this.http.post('http://localhost:3000/login', data);
   }
 
   //register
@@ -91,29 +70,27 @@ export class DataService {
   }
   //deposit
   deposit(acno: any, password: any, amt: any) {
-    var amount = parseInt(amt);
-
-    let db = this.db;
-
-    if (acno in db) {
-      if (password == db[acno]['password']) {
-        db[acno]['balance'] += amount;
-        db[acno].transaction.push({
-          type: 'CREDIT',
-          amount: amount,
-        });
-        this.saveDetails();
-
-        return db[acno]['balance'];
-      } else {
-        alert('Incorrect Password');
-        return false;
-      }
-    } else {
-      alert('User does not exist ...');
-      return false;
+    const data ={
+      acno,password,amt
     }
+   
+
+    return this.http.post('http://localhost:3000/deposit',data,this.getOptions())
   }
+  getOptions(){
+    const token = localStorage.getItem('token')
+    let headers = new HttpHeaders()
+    if(token){
+      headers = headers.append('x-access-token',token)
+      options.headers = headers
+    }
+    return options
+  }
+
+
+
+
+
   withdraw(acno: any, password: any, amt: any) {
     var amount = parseInt(amt);
     let db = this.db;

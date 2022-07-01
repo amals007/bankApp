@@ -74,7 +74,6 @@ export class DataService {
       acno,password,amt
     }
    
-
     return this.http.post('http://localhost:3000/deposit',data,this.getOptions())
   }
   getOptions(){
@@ -87,35 +86,13 @@ export class DataService {
     return options
   }
 
-
-
-
-
   withdraw(acno: any, password: any, amt: any) {
-    var amount = parseInt(amt);
-    let db = this.db;
-
-    if (acno in db) {
-      if (password == db[acno]['password']) {
-        if (db[acno]['balance'] > amount) {
-          db[acno]['balance'] -= amount;
-          db[acno].transaction.push({
-            type: 'DEBIT',
-            amount: amount,
-          });
-          this.saveDetails();
-          return db[acno]['balance'];
-        } else {
-          alert('insufficient balance');
-        }
-      } else {
-        alert('Incorrect Password');
-        return false;
-      }
-    } else {
-      alert('user does not exist');
-      return false;
+    const data ={
+      acno,password,amt
     }
+   
+    return this.http.post('http://localhost:3000/withdraw',data,this.getOptions())
+
   }
   getTransaction(acno: any) {
     return this.db[acno].transaction;

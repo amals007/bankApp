@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit {
     var pswd = this.depositForm.value.pswd
     var amount = this.depositForm.value.amount
     if (this.depositForm.valid) {
-      const result = this.ds.deposit(acno, pswd, amount)
+      this.ds.deposit(acno, pswd, amount)
       .subscribe((result:any) =>{
         if(result){
           alert(result.message)
@@ -68,17 +68,23 @@ export class DashboardComponent implements OnInit {
     var pswd = this.withdrawForm.value.pswd1
     var amount = this.withdrawForm.value.amount1
     if (this.withdrawForm.valid) {
-      const result = this.ds.withdraw(acno, pswd, amount)
-
-      if (result) {
-        alert(amount + "debit successfull and new balance is : " + result)
+      this.ds.withdraw(acno, pswd, amount)
+      .subscribe((result:any) => {
+        if(result){
+          alert(result.message)
+        }
+      },
+      result => {
+        alert(result.error.message)
       }
-    }
-
-    else {
-      alert("invalid form")
-    }
+      )
+   
   }
+  else {
+    alert("invalid form")
+  }
+}
+
   logout() {
     localStorage.removeItem("currentUser")
     localStorage.removeItem("currentAcno")

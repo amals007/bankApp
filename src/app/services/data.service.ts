@@ -9,45 +9,8 @@ const options = {
   providedIn: 'root',
 })
 export class DataService {
-  currentAcno: any;
-  currentUser: any;
-  db: any = {
-    1000: {
-      acno: 1000,
-      username: 'Neer',
-      password: 1000,
-      balance: 5000,
-      transactions: [],
-    },
-    1001: {
-      acno: 1001,
-      username: 'Laisha',
-      password: 1001,
-      balance: 5000,
-      transactions: [],
-    },
-    1002: {
-      acno: 1002,
-      username: 'Vipin',
-      password: 1002,
-      balance: 3000,
-      transactions: [],
-    },
-  };
-
   constructor(private http: HttpClient) {}
 
-  saveDetails() {
-    if (this.db) {
-      localStorage.setItem('database', JSON.stringify(this.db));
-    }
-    if (this.currentUser) {
-      localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-    }
-    if (this.currentAcno) {
-      localStorage.setItem('currentAcno', JSON.stringify(this.currentAcno));
-    }
-  }
 
   login(acno: any, pswd: any) {
     const data = {
@@ -95,6 +58,9 @@ export class DataService {
 
   }
   getTransaction(acno: any) {
-    return this.db[acno].transaction;
+    const data = {
+      acno
+    }
+    return this.http.post('http://localhost:3000/transaction',data,this.getOptions())
   }
 }
